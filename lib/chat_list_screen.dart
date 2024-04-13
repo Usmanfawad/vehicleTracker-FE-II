@@ -105,11 +105,14 @@ class _ChatListScreenState extends State<ChatListScreen> {
                         SizedBox(
                           width: 10,
                         ),
-                        Text("Talk to FriendAI.",style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        color: Colors.white,
-                        ),)
+                        Text(
+                          "Talk to FriendAI.",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
+                        )
                       ],
                     ),
                   ),
