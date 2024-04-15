@@ -1,18 +1,46 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:ffi';
 import 'dart:ui';
 import 'package:boiler_plate/widget/chat_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class ChatListScreen extends StatefulWidget {
-  const ChatListScreen({super.key});
+  const ChatListScreen({Key? key}) : super(key: key);
 
   @override
   State<ChatListScreen> createState() => _ChatListScreenState();
 }
 
 class _ChatListScreenState extends State<ChatListScreen> {
+  late List<Map<String, dynamic>> filteredData;
+  TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    filteredData = List.from(data);
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      filteredData = data.where((chat) {
+        final String searchTerm = _searchController.text.toLowerCase();
+        final String userName = chat['userName'] as String;
+
+        return userName.toLowerCase().contains(searchTerm);
+      }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +59,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
             borderRadius: BorderRadius.circular(40),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: const Row(
+          child: Row(
             children: [
               Icon(
                 Icons.search,
@@ -41,6 +69,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
               SizedBox(width: 8),
               Expanded(
                 child: TextField(
+                  controller: _searchController,
                   decoration: InputDecoration(
                     hintText: "Search here",
                     border: InputBorder.none,
@@ -118,7 +147,25 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     ),
                   ),
                 ),
-                ChatTile()
+                SizedBox(
+                  height: MediaQuery.of(context).size.height + 20,
+                  child: ListView.builder(
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: filteredData.length,
+                    itemBuilder: (context, index) {
+                      return ChatListCard(
+                        isSeen: filteredData[index]['isSeen'] as bool,
+                        userName: filteredData[index]['userName'] as String,
+                        lastMessageTime:
+                            filteredData[index]['lastMessageTime'] as String,
+                        lastMessage:
+                            filteredData[index]['lastMessage'] as String,
+                        userImage: filteredData[index]['userImage'] as String,
+                        userID: filteredData[index]['userID'] as String,
+                      );
+                    },
+                  ),
+                )
               ],
             ),
           ),
@@ -128,3 +175,85 @@ class _ChatListScreenState extends State<ChatListScreen> {
   }
 }
 
+final data = [
+  {
+    "userName": "John Doe",
+    "lastMessage": "Hello!",
+    "lastMessageTime": "2:30 PM",
+    "userImage": "https://example.com/user1.jpg",
+    "userID": "1",
+    "isSeen": true
+  },
+  {
+    "userName": "Alice Smith",
+    "lastMessage": "Hi there!",
+    "lastMessageTime": "1:45 PM",
+    "userImage": "https://example.com/user2.jpg",
+    "userID": "2",
+    "isSeen": false
+  },
+  {
+    "userName": "Bob Johnson",
+    "lastMessage": "Hey!",
+    "lastMessageTime": "12:15 PM",
+    "userImage": "https://example.com/user3.jpg",
+    "userID": "3",
+    "isSeen": true
+  },
+  {
+    "userName": "Emily Brown",
+    "lastMessage": "How are you?",
+    "lastMessageTime": "10:20 AM",
+    "userImage": "https://example.com/user4.jpg",
+    "userID": "4",
+    "isSeen": false
+  },
+  {
+    "userName": "Michael Wilson",
+    "lastMessage": "What's up?",
+    "lastMessageTime": "9:00 AM",
+    "userImage": "https://example.com/user5.jpg",
+    "userID": "5",
+    "isSeen": true
+  },
+  {
+    "userName": "Emma Taylor",
+    "lastMessage": "Nice to meet you!",
+    "lastMessageTime": "Yesterday",
+    "userImage": "https://example.com/user6.jpg",
+    "userID": "6",
+    "isSeen": false
+  },
+  {
+    "userName": "James Martinez",
+    "lastMessage": "Good morning!",
+    "lastMessageTime": "Yesterday",
+    "userImage": "https://example.com/user7.jpg",
+    "userID": "7",
+    "isSeen": true
+  },
+  {
+    "userName": "Olivia Garcia",
+    "lastMessage": "Good night!",
+    "lastMessageTime": "2 days ago",
+    "userImage": "https://example.com/user8.jpg",
+    "userID": "8",
+    "isSeen": false
+  },
+  {
+    "userName": "William Rodriguez",
+    "lastMessage": "Have a nice day!",
+    "lastMessageTime": "3 days ago",
+    "userImage": "https://example.com/user9.jpg",
+    "userID": "9",
+    "isSeen": true
+  },
+  {
+    "userName": "Sophia Hernandez",
+    "lastMessage": "See you later!",
+    "lastMessageTime": "3 days ago",
+    "userImage": "https://example.com/user10.jpg",
+    "userID": "10",
+    "isSeen": false
+  }
+];
