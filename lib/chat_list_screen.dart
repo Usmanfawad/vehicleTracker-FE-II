@@ -32,10 +32,9 @@ class _ChatListScreenState extends State<ChatListScreen> {
 
   void _onSearchChanged() {
     setState(() {
+      final String searchTerm = _searchController.text.toLowerCase();
       filteredData = data.where((chat) {
-        final String searchTerm = _searchController.text.toLowerCase();
         final String userName = chat['userName'] as String;
-
         return userName.toLowerCase().contains(searchTerm);
       }).toList();
     });
@@ -85,6 +84,7 @@ class _ChatListScreenState extends State<ChatListScreen> {
         shadowColor: Colors.black,
       ),
       body: Container(
+        height: MediaQuery.of(context).size.height,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -147,25 +147,22 @@ class _ChatListScreenState extends State<ChatListScreen> {
                     ),
                   ),
                 ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height + 20,
-                  child: ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: filteredData.length,
-                    itemBuilder: (context, index) {
-                      return ChatListCard(
-                        isSeen: filteredData[index]['isSeen'] as bool,
-                        userName: filteredData[index]['userName'] as String,
-                        lastMessageTime:
-                            filteredData[index]['lastMessageTime'] as String,
-                        lastMessage:
-                            filteredData[index]['lastMessage'] as String,
-                        userImage: filteredData[index]['userImage'] as String,
-                        userID: filteredData[index]['userID'] as String,
-                      );
-                    },
-                  ),
-                )
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemCount: filteredData.length,
+                  itemBuilder: (context, index) {
+                    return ChatListCard(
+                      isSeen: filteredData[index]['isSeen'] as bool,
+                      userName: filteredData[index]['userName'] as String,
+                      lastMessageTime:
+                          filteredData[index]['lastMessageTime'] as String,
+                      lastMessage: filteredData[index]['lastMessage'] as String,
+                      userImage: filteredData[index]['userImage'] as String,
+                      userID: filteredData[index]['userID'] as String,
+                    );
+                  },
+                ),
               ],
             ),
           ),
